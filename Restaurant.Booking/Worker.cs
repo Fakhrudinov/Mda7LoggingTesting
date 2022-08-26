@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Restaurant.Booking.MassTransitDTO;
 using Restaurant.Messages;
 using Restaurant.Messages.Interfaces;
@@ -14,11 +15,13 @@ namespace Restaurant.Booking
         private readonly IBus _bus;
         private readonly Restaurant _restaurant;
         private readonly Random _random = new Random();
+        private readonly ILogger _logger;
 
-        public Worker(IBus bus, Restaurant restaurant)
+        public Worker(IBus bus, Restaurant restaurant, ILogger<Worker> logger)
         {
             _bus = bus;
             _restaurant = restaurant;
+            _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,6 +44,8 @@ namespace Restaurant.Booking
 
                 string userInput = Console.ReadLine();
 
+                _logger.LogInformation($"Worker Action User input is: {userInput}");
+
                 if (int.TryParse(userInput, out int choise) && (choise < 0 || choise > 6))
                 {
                     Console.WriteLine("\tВнимание, некорректный ввод! допускается только целые числа  0  1  2  3  4  5 6");
@@ -59,7 +64,7 @@ namespace Restaurant.Booking
                 }
                 else if (choise == 1)//correct client and correct order
                 {
-                    Console.WriteLine($"Worker=Заказ #{orderId}, для клиента #{clientId}");
+                    _logger.LogDebug($"Worker=Заказ #{orderId}, для клиента #{clientId}");
 
                     await _bus.Publish(
                         (IBookingRequest)new BookingRequested(
@@ -73,7 +78,7 @@ namespace Restaurant.Booking
                 }
                 else if (choise == 2)//correct client and bad order
                 {
-                    Console.WriteLine($"Worker=Заказ #{orderId}, для клиента #{clientId}");
+                    _logger.LogDebug($"Worker=Заказ #{orderId}, для клиента #{clientId}");
 
                     await _bus.Publish(
                         (IBookingRequest)new BookingRequested(
@@ -87,7 +92,7 @@ namespace Restaurant.Booking
                 }
                 else if (choise == 3)//bad client and correct order
                 {
-                    Console.WriteLine($"Worker=Заказ #{orderId}, для клиента #{clientId}");
+                    _logger.LogDebug($"Worker=Заказ #{orderId}, для клиента #{clientId}");
 
                     await _bus.Publish(
                         (IBookingRequest)new BookingRequested(
@@ -101,7 +106,7 @@ namespace Restaurant.Booking
                 }
                 else if (choise == 4)//random client and correct order (every 4th is exception at kitchen)
                 {
-                    Console.WriteLine($"Worker=Заказ #{orderId}, для клиента #{clientId}");
+                    _logger.LogDebug($"Worker=Заказ #{orderId}, для клиента #{clientId}");
 
                     Dish currentDish = new Dish { Id = _random.Next(0, 2) };
 
@@ -125,7 +130,7 @@ namespace Restaurant.Booking
                 }
                 else if (choise == 5)//correct client and order with exception
                 {
-                    Console.WriteLine($"Worker=Заказ #{orderId}, для клиента #{clientId}");
+                    _logger.LogDebug($"Worker=Заказ #{orderId}, для клиента #{clientId}");
 
                     await _bus.Publish(
                         (IBookingRequest)new BookingRequested(
@@ -145,6 +150,8 @@ namespace Restaurant.Booking
                         Console.WriteLine("\tВыберите номер стола, которому отменяем бронь");
 
                         string userInputTableNumber = Console.ReadLine();
+
+                        _logger.LogInformation($"Worker UnbookTable User input is: {userInputTableNumber}");
 
                         if (int.TryParse(userInputTableNumber, out int tableNumber))
                         {

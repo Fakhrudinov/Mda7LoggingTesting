@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Timers;
+using Microsoft.Extensions.Logging;
 using Restaurant.Messages.Repositories.Interfaces;
 
 namespace Restaurant.Messages.Repositories.Implementation
@@ -9,9 +10,17 @@ namespace Restaurant.Messages.Repositories.Implementation
     {
         private readonly ConcurrentBag<T> _repository = new();
         private Timer _timer;
+        private readonly ILogger _logger;
+
+        public InMemoryRepository(ILogger<T> logger)
+        {
+            _logger = logger;
+        }
 
         public void AddOrUpdate(T entity)
         {
+            _logger.LogInformation($"InMemoryRepository request AddOrUpdate entity={entity}");
+
             _repository.Add(entity);
 
             _timer = new(30_000);
@@ -22,6 +31,8 @@ namespace Restaurant.Messages.Repositories.Implementation
 
         public IEnumerable<T> Get()
         {
+            _logger.LogInformation($"InMemoryRepository request Get");
+
             return _repository;
         }
 
@@ -29,7 +40,7 @@ namespace Restaurant.Messages.Repositories.Implementation
         {
             _repository.TryTake(out var result);
 
-            System.Console.WriteLine($"InMemoryRepository Delete {result} for {this.GetType()}");
+            _logger.LogInformation($"InMemoryRepository request Delete {result}");
         }
     }
 }
