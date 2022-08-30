@@ -17,6 +17,10 @@ namespace Restaurant.Messages.Repositories.Implementation
             _logger = logger;
         }
 
+        /// <summary>
+        /// Добавление новой уникальной записи. Запуск таймера на удаление записи через 30 секунд
+        /// </summary>
+        /// <param name="entity">T class</param>
         public void AddOrUpdate(T entity)
         {
             _logger.LogInformation($"InMemoryRepository request AddOrUpdate entity={entity}");
@@ -29,6 +33,10 @@ namespace Restaurant.Messages.Repositories.Implementation
             _timer.Start();
         }
 
+        /// <summary>
+        /// Получение всех записей
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<T> Get()
         {
             _logger.LogInformation($"InMemoryRepository request Get");
@@ -36,6 +44,9 @@ namespace Restaurant.Messages.Repositories.Implementation
             return _repository;
         }
 
+        /// <summary>
+        /// Удаление одной записи
+        /// </summary>
         public void Delete()
         {
             _repository.TryTake(out var result);

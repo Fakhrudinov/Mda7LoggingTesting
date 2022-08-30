@@ -20,7 +20,11 @@ namespace Restaurant.Notification.Consumers
             _repository = repository;
             _logger = logger;
         }
-
+        /// <summary>
+        /// подписка на события уведомлений
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Task Consume(ConsumeContext<INotify> context)
         {
             _logger.LogInformation($"NotifyConsumer request from repository #{context.Message.OrderId}");

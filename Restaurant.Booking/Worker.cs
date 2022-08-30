@@ -24,6 +24,11 @@ namespace Restaurant.Booking
             _logger = logger;
         }
 
+        /// <summary>
+        /// основной цикл приема новыз заказов букинга
+        /// </summary>
+        /// <param name="stoppingToken">токен отмены</param>
+        /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;

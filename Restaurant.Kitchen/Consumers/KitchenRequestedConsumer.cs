@@ -23,6 +23,12 @@ namespace Restaurant.Kitchen.Consumers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Подписка на событие бронирования на кухне
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="KitchenException"></exception>
         public async Task Consume(ConsumeContext<ITableBooked> context)
         {
             _logger.LogInformation($"KitchenRequestedConsumer request from repository #{context.Message.OrderId}");

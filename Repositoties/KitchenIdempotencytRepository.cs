@@ -26,6 +26,11 @@ namespace Repositoties
             _logger = logger;
         }
 
+        /// <summary>
+        /// Добавление записи в репозиторий. Запуск таймера на удаление этой записи через 30 секунд
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public async Task Add(TableBookedModel entity)
         {
             _logger.LogInformation($"KitchenIdempotencytRepository request Add entity.OrderId={entity.OrderId}");
@@ -50,6 +55,11 @@ namespace Repositoties
             //await PrintTable("Add");
         }
 
+        /// <summary>
+        /// Запрос наличия записи в репозитории. Возвращаем bool
+        /// </summary>
+        /// <param name="MessageId">Параметр поиска</param>
+        /// <returns></returns>
         public async Task<bool> Contains(string MessageId)
         {
             _logger.LogInformation($"KitchenIdempotencytRepository request Contains MessageId={MessageId}");
@@ -75,6 +85,11 @@ namespace Repositoties
             return true;
         }
 
+        /// <summary>
+        /// Удаление записи из репозитория по уникальному параметру
+        /// </summary>
+        /// <param name="MessageId"></param>
+        /// <returns></returns>
         private async Task Delete(string MessageId)
         {
             _logger.LogInformation($"KitchenIdempotencytRepository request Delete MessageId={MessageId}");
@@ -93,6 +108,11 @@ namespace Repositoties
             //await PrintTable("Delete");
         }
 
+        /// <summary>
+        /// Вывод всех записей из таблицы на экран. Для отладки работы приложения
+        /// </summary>
+        /// <param name="operationName"></param>
+        /// <returns></returns>
         private async Task PrintTable(string operationName)
         {
             using (var con = new SQLiteConnection(RepositoryConnectionSettings.ConnectionString))

@@ -16,6 +16,11 @@ namespace Restaurant.Booking.Consumers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Подписка на запрос отмены бронирования
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Consume(ConsumeContext<IBookingCancelRequested> context)
         {
             _logger.LogInformation($"BookingCancelRequested==[OrderId {context.Message.OrderId}] Отмена");
