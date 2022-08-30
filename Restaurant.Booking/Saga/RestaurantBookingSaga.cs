@@ -1,5 +1,5 @@
-﻿using Automatonymous;
-using MassTransit;
+﻿using MassTransit;
+using Microsoft.Extensions.Logging;
 using Restaurant.Booking.Consumers.Interfaces;
 using Restaurant.Booking.MassTransitDTO;
 using Restaurant.Messages.Interfaces;
@@ -28,9 +28,12 @@ namespace Restaurant.Booking.Saga
         public Schedule<RestaurantBooking, IGuestWaitingExpired> BookingAwaitingGuestSchedule { get; private set; }
         public Schedule<RestaurantBooking, IGuestArrived> ActualGuestArrivalSchedule { get; private set; }
 
+        private readonly ILogger<RestaurantBookingSaga> _logger;
 
-        public RestaurantBookingSaga()
+        public RestaurantBookingSaga(ILogger<RestaurantBookingSaga> logger)
         {
+            _logger = logger;
+
             InstanceState(x => x.CurrentState);
 
             
@@ -104,7 +107,7 @@ namespace Restaurant.Booking.Saga
                         context.Instance.ClientId = context.Data.ClientId;
                         context.Instance.BookingArrivalTime = context.Data.BookingArrivalTime;
                         context.Instance.ActualArrivalTime = context.Data.ActualArrivalTime;
-                        Console.WriteLine($"Saga BookingRequestedEvent order={context.Data.OrderId} client={context.Data.ClientId}");
+                        _logger.LogInformation($"Saga BookingRequestedEvent order={context.Data.OrderId} client={context.Data.ClientId}");
                     })
                     .Schedule(
                         BookingExpiredSchedule,
@@ -122,8 +125,8 @@ namespace Restaurant.Booking.Saga
                             context.Instance.OrderId,
                             context.Instance.ClientId,
                             $"Saga AwaitingBookingApproved Стол успешно забронирован"))
-                    .Then(context => 
-                        Console.WriteLine($"Saga AwaitingBookingApproved Ожидание гостя {context.Instance.ClientId} " +
+                    .Then(context =>
+                        _logger.LogInformation($"Saga AwaitingBookingApproved Ожидание гостя {context.Instance.ClientId} " +
                         $"actual=>{TimeSpan.FromSeconds(context.Instance.ActualArrivalTime)} " +
                         $"booking=>{TimeSpan.FromSeconds(context.Instance.BookingArrivalTime)}"))
                 
@@ -140,8 +143,8 @@ namespace Restaurant.Booking.Saga
                     .Unschedule(BookingExpiredSchedule)
                     .Unschedule(BookingAwaitingGuestSchedule)
                     .Unschedule(ActualGuestArrivalSchedule)
-                    .Then(context => 
-                        Console.WriteLine($"Ошибочка вышла!"))
+                    .Then(context =>
+                        _logger.LogWarning($"Ошибочка вышла!"))
                     .Publish(context => (INotify)new Notify(
                         context.Instance.OrderId,
                         context.Instance.ClientId,
@@ -155,7 +158,7 @@ namespace Restaurant.Booking.Saga
                     .Unschedule(BookingAwaitingGuestSchedule)
                     .Unschedule(ActualGuestArrivalSchedule)
                     .Then(context =>
-                        Console.WriteLine("Saga KitchenFaultEvent На кухне произошла ошибка!"))
+                        _logger.LogInformation("Saga KitchenFaultEvent На кухне произошла ошибка!"))
                     .Publish(context => (INotify)new Notify(
                         context.Instance.OrderId,
                         context.Instance.ClientId,
@@ -165,8 +168,8 @@ namespace Restaurant.Booking.Saga
                     .Finalize(),
 
                 When(NotificationFaultEvent)//при эксепшене в INotify
-                    .Then(context => 
-                        Console.WriteLine("Saga NotificationFaultEvent В сервисе уведомлений произошла ошибка!"))
+                    .Then(context =>
+                        _logger.LogWarning("Saga NotificationFaultEvent В сервисе уведомлений произошла ошибка!"))
                     .Finalize(),
 
 
@@ -196,8 +199,8 @@ namespace Restaurant.Booking.Saga
                     .Unschedule(BookingExpiredSchedule)
                     .Unschedule(BookingAwaitingGuestSchedule)
                     .Unschedule(ActualGuestArrivalSchedule)
-                    .Then(context => 
-                        Console.WriteLine($"Saga BookingExpiredSchedule.Received Отмена заказа - тормозим на кухне #{context.Instance.OrderId}  " +
+                    .Then(context =>
+                        _logger.LogInformation($"Saga BookingExpiredSchedule.Received Отмена заказа - тормозим на кухне #{context.Instance.OrderId}  " +
                         $"ActualArrivalTime= {context.Instance.ActualArrivalTime} BookingArrivalTime={context.Instance.BookingArrivalTime}"))
                     .Publish(context => (INotify)new Notify(
                         context.Instance.OrderId,
@@ -214,8 +217,8 @@ namespace Restaurant.Booking.Saga
                     .Unschedule(BookingExpiredSchedule)
                     .Unschedule(BookingAwaitingGuestSchedule)
                     .Unschedule(ActualGuestArrivalSchedule)
-                    .Then(context => 
-                        Console.WriteLine($"Saga ActualGuestArrivalSchedule?.Received Гость ClientId={context.Instance.ClientId} прибыл, " +
+                    .Then(context =>
+                        _logger.LogInformation($"Saga ActualGuestArrivalSchedule?.Received Гость ClientId={context.Instance.ClientId} прибыл, " +
                         $"ActualArrivalTime= {context.Instance.ActualArrivalTime} BookingArrivalTime={context.Instance.BookingArrivalTime}"))
                     .Finalize(),
 
@@ -223,8 +226,8 @@ namespace Restaurant.Booking.Saga
                     .Unschedule(BookingExpiredSchedule)
                     .Unschedule(ActualGuestArrivalSchedule)
                     .Unschedule(BookingAwaitingGuestSchedule)
-                    .Then(context => 
-                        Console.WriteLine($"Saga Гость ClientId={context.Instance.ClientId} не пришел"))
+                    .Then(context =>
+                        _logger.LogInformation($"Saga Гость ClientId={context.Instance.ClientId} не пришел"))
                     .Publish(context => (INotify)new Notify(
                             context.Instance.OrderId,
                             context.Instance.ClientId,

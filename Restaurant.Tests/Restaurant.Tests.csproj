@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
+    <PackageReference Include="coverlet.collector" Version="3.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Repositoties\Repositories.csproj" />
+    <ProjectReference Include="..\Restaurant.Booking\Restaurant.Booking.csproj" />
+    <ProjectReference Include="..\Restaurant.Kitchen\Restaurant.Kitchen.csproj" />
+    <ProjectReference Include="..\Restaurant.Messages\Restaurant.Messages.csproj" />
+    <ProjectReference Include="..\Restaurant.Notification\Restaurant.Notification.csproj" />
+  </ItemGroup>
+
+</Project>

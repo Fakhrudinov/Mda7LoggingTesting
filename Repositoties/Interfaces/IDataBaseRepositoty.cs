@@ -6,6 +6,5 @@ namespace Repositories.Interfaces
     {
         public Task Add(T entity);
         public Task<bool> Contains(string key);
-        //public Task Delete(string key);
     }
 }

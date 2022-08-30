@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Lesson1;
+using Microsoft.Extensions.Logging;
 
 namespace Restaurant.Booking
 {
@@ -13,8 +14,9 @@ namespace Restaurant.Booking
         private readonly List<Table> _tables = new ();
         private System.Timers.Timer _timerResetTablesBooking;
         private Mutex _mutex = new Mutex();
+        private readonly ILogger _logger;
 
-        public Restaurant()
+        public Restaurant(ILogger<Restaurant> logger)
         {
             for (ushort i = 1; i <= 10; i++)
             {
@@ -25,6 +27,8 @@ namespace Restaurant.Booking
             _timerResetTablesBooking.AutoReset = true;
             _timerResetTablesBooking.Elapsed += new ElapsedEventHandler(ResetAllTablesBooking);
             _timerResetTablesBooking.Start();
+
+            _logger = logger;
         }
 
         public async Task<bool?> BookFreeTableAsync(int countOfPersons, Guid orderId, CancellationToken token = default)
@@ -42,10 +46,12 @@ namespace Restaurant.Booking
 
             if (result == true)
             {
+                _logger.LogDebug($"Restaurant BookFreeTableAsync table {table.Id} booked");
                 return true;
             }
             else
             {
+                _logger.LogDebug($"Restaurant BookFreeTableAsync table booked failed, null returned");
                 return null;
             }
         }
@@ -77,19 +83,22 @@ namespace Restaurant.Booking
                 }
                 else if (table.State == EnumState.Free)
                 {
+                    _logger.LogDebug($"Restaurant DeleteBookingForTableAsync: стол #{tableNumber} и так свободен был");
                     Console.WriteLine($"Да этот стол #{tableNumber} и так свободен был, что вы нас от работы отвлекаете!");
                 }
                 else
                 {
                     bool isSucces = table.SetState(EnumState.Free);
 
-                    Console.WriteLine($"Снятие брони с стола номер {table.Id} = {isSucces}");
+                    _logger.LogDebug($"Restaurant DeleteBookingForTableAsync Снятие брони с стола номер {table.Id} = {isSucces}");
                 }
             });
         }
 
         private void InformManagementAboutNullProblem(string action, int tableNumber)
         {
+            _logger.LogWarning($"Restaurant InformManagementAboutNullProblem Внимание! Что-то пошло не так при выполнении '{action}' для стола #{tableNumber}. ");
+
             Console.WriteLine($"Внимание! Что-то пошло не так при выполнении '{action}' для стола #{tableNumber}. " +
                 $"Похоже у нас украли стол, так как вернулся null...");
         }
@@ -108,13 +117,14 @@ namespace Restaurant.Booking
             await Task.Run(async () =>
             {
                 Console.WriteLine("Автоматическое снятие бронирования со всех столов");
+                _logger.LogInformation($"Restaurant ResetAllTablesBooking Event: Автоматическое снятие бронирования со всех столов");
 
                 foreach (Table table in _tables)
                 {
                     if (table.State == EnumState.Booked)
                     {
                         bool isSucces = table.SetState(EnumState.Free);
-                        Console.WriteLine($"УВЕДОМЛЕНИЕ асинхронно! Снятие брони с стола номер {table.Id} = {isSucces}");
+                        _logger.LogDebug($"Restaurant ResetAllTablesBooking УВЕДОМЛЕНИЕ асинхронно! Снятие брони с стола номер {table.Id} = {isSucces}");
                     }
                 }
             });
