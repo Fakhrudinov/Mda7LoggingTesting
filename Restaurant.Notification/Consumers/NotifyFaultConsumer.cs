@@ -13,7 +13,11 @@ namespace Restaurant.Notification.Consumers
         {
             _logger = logger;
         }
-
+        /// <summary>
+        /// Подписка на событие ошибки в доставке уведомления
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Task Consume(ConsumeContext<Fault<INotify>> context)
         {
             _logger.LogWarning($"NotifyFaultConsumer Event for {context.Message.Message.OrderId}");

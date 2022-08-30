@@ -11,6 +11,9 @@ namespace Repositories
                                                         MessageId   CHAR(36) PRIMARY KEY NOT NULL,
                                                         OrderId     CHAR(36))";
 
+        /// <summary>
+        /// Создание всегда новой таблицы для репозитория идемпотентных событий
+        /// </summary>
         public static void CreateNewKitchenTable()
         {
             Console.WriteLine("PrepareDataBases/CreateNewKitchenTable: Data base connection is " + RepositoryConnectionSettings.ConnectionString);

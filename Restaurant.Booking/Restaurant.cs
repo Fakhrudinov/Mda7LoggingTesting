@@ -31,6 +31,13 @@ namespace Restaurant.Booking
             _logger = logger;
         }
 
+        /// <summary>
+        /// Забронировать столик. 
+        /// </summary>
+        /// <param name="countOfPersons">Количество человек, которое стол должен вместить</param>
+        /// <param name="orderId">Номер заказа</param>
+        /// <param name="token">Токен отмены</param>
+        /// <returns>Вернем null или bool</returns>
         public async Task<bool?> BookFreeTableAsync(int countOfPersons, Guid orderId, CancellationToken token = default)
         {
             Console.WriteLine($"Спасибо за Ваше обращение, я подберу столик и подтвержу вашу бронь #{orderId}," +
@@ -56,6 +63,12 @@ namespace Restaurant.Booking
             }
         }
 
+        /// <summary>
+        /// Отмена бронирования в результате события консьюмера
+        /// </summary>
+        /// <param name="orderId">Номер заказа</param>
+        /// <param name="token">Токен отмены</param>
+        /// <returns></returns>
         public async Task CancelReservationAsync(Guid orderId, CancellationToken token = default)
         {
             await Task.Run(async () =>
@@ -68,6 +81,11 @@ namespace Restaurant.Booking
             }, token);
         }
 
+        /// <summary>
+        /// Отмена бронирования клиентом
+        /// </summary>
+        /// <param name="tableNumber"></param>
+        /// <returns></returns>
         internal async Task DeleteBookingForTableAsync(int tableNumber)
         {
             Console.WriteLine($"\tСнимем асинхронно бронь сo столика {tableNumber} и оповестим вас");
@@ -95,6 +113,11 @@ namespace Restaurant.Booking
             });
         }
 
+        /// <summary>
+        /// Отправка уведомления руководству о проблеме
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="tableNumber"></param>
         private void InformManagementAboutNullProblem(string action, int tableNumber)
         {
             _logger.LogWarning($"Restaurant InformManagementAboutNullProblem Внимание! Что-то пошло не так при выполнении '{action}' для стола #{tableNumber}. ");
@@ -103,6 +126,9 @@ namespace Restaurant.Booking
                 $"Похоже у нас украли стол, так как вернулся null...");
         }
 
+        /// <summary>
+        /// Распечатать состояние всех столов
+        /// </summary>
         internal void PrintTablesStatus()
         {
             Console.WriteLine("\tСостояние столиков:");
@@ -112,6 +138,11 @@ namespace Restaurant.Booking
             }
         }
 
+        /// <summary>
+        /// Автоматическое снятие брони со всех столиков по таймеру
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ResetAllTablesBooking(object? sender, ElapsedEventArgs e)
         {
             await Task.Run(async () =>

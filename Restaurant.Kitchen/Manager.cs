@@ -5,6 +5,12 @@ namespace Restaurant.Kitchen
 {
     public class Manager
     {
+        /// <summary>
+        /// Обработка возможности заказа блюд.
+        /// </summary>
+        /// <param name="orderId">Номер заказа</param>
+        /// <param name="dish">Заказанное блюдо</param>
+        /// <returns>bool, блюдо</returns>
         public (bool confirmation, Dish? dish) CheckKitchenReady(Guid orderId, Dish? dish)
         {
             switch (dish.Id)

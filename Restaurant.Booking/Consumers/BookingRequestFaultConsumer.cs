@@ -14,6 +14,11 @@ namespace Restaurant.Booking.Consumers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Подписка на событие ошибки про бронировании столика
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Task Consume(ConsumeContext<Fault<IBookingRequest>> context)
         {
             _logger.LogWarning($"BookingRequestFaultConsumer [OrderId {context.Message.Message.OrderId}] Отмена в зале");

@@ -16,6 +16,11 @@ namespace Restaurant.Kitchen.Consumers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Подписка на событие ошибки на кухне
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Task Consume(ConsumeContext<Fault<ITableBooked>> context)
         {
             _logger.LogWarning($"KitchenFaultConsumer Event for {context.Message.Message.OrderId}");

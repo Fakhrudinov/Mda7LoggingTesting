@@ -17,7 +17,11 @@ namespace Lesson1
             OrderId = null;
         }
 
-        //unbook
+        /// <summary>
+        /// Выставление статуса свободен для стола
+        /// </summary>
+        /// <param name="state">Enum</param>
+        /// <returns>Bool</returns>
         public bool SetState(EnumState state)
         {
             if (state == State)
@@ -29,7 +33,12 @@ namespace Lesson1
             return true;
         }
 
-        //book
+        /// <summary>
+        /// Выставление статуса занят для стола
+        /// </summary>
+        /// <param name="state">Enum</param>
+        /// <param name="orderId">Номер заказа</param>
+        /// <returns>Bool</returns>
         public bool SetState(EnumState state, Guid orderId)
         {
             if (state == State)

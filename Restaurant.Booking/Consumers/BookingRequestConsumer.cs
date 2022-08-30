@@ -23,6 +23,12 @@ namespace Restaurant.Booking.Consumers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Подписка на событие запрос бронирования столика
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="BookingException"></exception>
         public async Task Consume(ConsumeContext<IBookingRequest> context)
         {
             _logger.LogInformation($"BookingRequestConsumer==[OrderId: {context.Message.OrderId}] Ищем свободный стол");

@@ -14,6 +14,13 @@ namespace Restaurant.Kitchen.Audit
             _logger = logger;
         }
 
+        /// <summary>
+        /// Аудит сообщений кухни в логах
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="message"></param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
         public Task StoreMessage<T>(T message, MessageAuditMetadata metadata) where T : class
         {
             _logger.LogInformation($"{JsonSerializer.Serialize(metadata)}\n{JsonSerializer.Serialize(message)}");
